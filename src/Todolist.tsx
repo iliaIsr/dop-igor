@@ -1,5 +1,6 @@
 import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
 import {FilterValuesType} from './App';
+import {v1} from "uuid";
 
 export type TaskType = {
     id: string
@@ -23,6 +24,11 @@ export function Todolist(props: PropsType) {
 
     let [title, setTitle] = useState("")
     let [error, setError] = useState<string | null>(null)
+
+
+
+
+
 
     const addTask = () => {
         if (title.trim() !== "") {
@@ -52,6 +58,14 @@ export function Todolist(props: PropsType) {
         props.removeTodolist(props.todolistId)
     }
 
+    let tasksForTodolist = props.tasks;
+    if (props.filter === "active") {
+        tasksForTodolist = props.tasks.filter(t => t.isDone === false);
+    }
+    if (props.filter === "completed") {
+        tasksForTodolist = props.tasks.filter(t => t.isDone === true);
+    }
+
     return <div>
         <h3>
             {props.title}
@@ -69,7 +83,7 @@ export function Todolist(props: PropsType) {
         </div>
         <ul>
             {
-                props.tasks.map(t => {
+                tasksForTodolist.map(t => {
                     const onClickHandler = () => props.removeTask(props.todolistId, t.id)
                     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
                         props.changeTaskStatus(props.todolistId, t.id, e.currentTarget.checked);
