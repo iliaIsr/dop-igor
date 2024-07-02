@@ -1,5 +1,5 @@
-import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
-import {FilterValuesType} from './App';
+import React, {ChangeEvent, useState, KeyboardEvent} from 'react';
+import {FilterValuesType, TasksType} from './App';
 import {v1} from "uuid";
 
 export type TaskType = {
@@ -9,30 +9,25 @@ export type TaskType = {
 }
 
 type PropsType = {
-    todolistId: string
+    id: string
     title: string
-    tasks: Array<TaskType>
-    removeTask: (todolistId: string, taskId: string) => void
-    changeFilter: (todolistId: string, value: FilterValuesType) => void
-    addTask: (todolistId: string, title: string) => void
-    changeTaskStatus: (todolistId: string, taskId: string, isDone: boolean) => void
+    tasks: Array<TasksType>
+    removeTask: (taskId: string, todolistId: string) => void
+    changeFilter: (value: FilterValuesType, todolistId: string) => void
+    addTask: (title: string, todolistId: string) => void
+    changeTaskStatus: (id: string, isDone: boolean, todolistId: string) => void
+    removeTodolist: (id: string) => void
     filter: FilterValuesType
-    removeTodolist: (todolistId: string) => void
 }
 
 export function Todolist(props: PropsType) {
-
     let [title, setTitle] = useState("")
     let [error, setError] = useState<string | null>(null)
 
-
-
-
-
-
     const addTask = () => {
-        if (title.trim() !== "") {
-            props.addTask(props.todolistId, title.trim());
+        let newTitle = title.trim();
+        if (newTitle !== "") {
+            props.addTask(newTitle, props.id);
             setTitle("");
         } else {
             setError("Title is required");
@@ -50,27 +45,136 @@ export function Todolist(props: PropsType) {
         }
     }
 
-    const onAllClickHandler = () => props.changeFilter(props.todolistId, "all");
-    const onActiveClickHandler = () => props.changeFilter(props.todolistId, "active");
-    const onCompletedClickHandler = () => props.changeFilter(props.todolistId, "completed");
 
-    const removeTodolistHandler = () => {
-        props.removeTodolist(props.todolistId)
-    }
+    // const [todoFromServer, setTodoFromServer] = useState<Array<ObjectType>>([
+    //     {
+    //         todolistId: v1(),
+    //         title: "What to learn",
+    //         filter: "all",
+    //         tasks: [
+    //             {taskId: v1(), title: "HTML&CSS", isDone: true},
+    //             {taskId: v1(), title: "JS", isDone: true}
+    //         ],
+    //         students: [
+    //             'Rick Kane',
+    //             'Finnlay Bentley',
+    //             'Samia North',
+    //             'Isaac Morton',
+    //             'Lily-Ann Clifford',
+    //             'Thalia Park',
+    //             'Sapphire Cruz',
+    //             'Cieran Vazquez',
+    //             'Anya Estes',
+    //             'Dominika Field',
+    //             'Rosanna Chung',
+    //             'Safiyah Davey',
+    //             'Ryley Beasley',
+    //             'Kalvin Trejo',
+    //             'Evie-Mae Farrell',
+    //             'Juliet Valencia',
+    //             'Astrid Austin',
+    //             'Lyle Montgomery',
+    //             'Nisha Mora',
+    //             'Kylie Callaghan',
+    //             'Star Wilks',
+    //             'Marissa Colley',
+    //             'Asa Fuller',
+    //             'Leigh Kemp',
+    //             'Avleen Dawson',
+    //             'Sammy Bonilla',
+    //             'Acacia Becker',
+    //             'Coral Shepherd',
+    //             'Melina Molina',
+    //             'Kiran Bailey',
+    //             'Clara Escobar',
+    //             'Alexandru Horn',
+    //             'Brandon-Lee Mercado',
+    //             'Elouise Weston',
+    //             'King Long',
+    //             'Kerri Searle',
+    //             'Kanye Hamer',
+    //             'Elwood Benitez',
+    //             'Mikail Whitaker',
+    //             'Bobby Hardy',
+    //             'Talha Ferry',
+    //             'Priscilla Landry',
+    //             'Olivia-Grace Cain',
+    //             'Kiaan Wallace',
+    //             'Wesley Padilla90',
+    //             'Ella-Grace Wooten91',
+    //             'Kaif Molloy92',
+    //             'Kamal Broadhurst93',
+    //             'Bianca Ferrell94',
+    //             'Micheal Talbot95',
+    //         ]
+    //     },
+    //     {
+    //         todolistId: v1(),
+    //         title: "What to do",
+    //         filter: "all",
+    //         tasks: [
+    //             {taskId: v1(), title: "HTML&CSS2", isDone: true},
+    //             {taskId: v1(), title: "JS2", isDone: true}
+    //         ],
+    //         students: [
+    //             'Jago Wormald1',
+    //             'Saul Milne2',
+    //             'Aariz Hester3',
+    //             'Dion Reeve4',
+    //             'Anisa Ortega5',
+    //             'Blade Cisneros6',
+    //             'Malaikah Phelps7',
+    //             'Zeeshan Gallagher8',
+    //             'Isobella Vo9',
+    //             'Rizwan Mathis10',
+    //             'Menaal Leach11',
+    //             'Kian Walton12',
+    //             'Orion Lamb13',
+    //             'Faizah Huynh14',
+    //             'Crystal Vaughan15',
+    //             'Vivien Hickman16',
+    //             'Stuart Lu17',
+    //             'Karol Davison18',
+    //             'Dario Burns19',
+    //             'Chloe Rich20',
+    //             'Martyna Felix',
+    //             'Nida Glass',
+    //             'Maeve Miles',
+    //             'Hasnain Puckett',
+    //             'Ayman Cano',
+    //             'Safwan Perry',
+    //             'Fox Kelly',
+    //             'Louise Barlow',
+    //             'Malaki Mcgill',
+    //             'Leanna Cline',
+    //             'Willard Hodge',
+    //             'Amelia Dorsey',
+    //             'Kiah Porter',
+    //             'Jeanne Daly',
+    //             'Mohsin Armstrong',
+    //             'Laurie Rangel',
+    //             'Princess Tierney',
+    //             'Kasim Kendall',
+    //             'Darryl Cope',
+    //             'Elysha Ray',
+    //             'Liyana Harris',
+    //             'Kashif Blackburn',
+    //             'Atif Zimmerman',
+    //             'Sila Hartley',
+    //             'Ralphie Hebert',
+    //         ]
+    //     }
+    // ])
 
-    let tasksForTodolist = props.tasks;
-    if (props.filter === "active") {
-        tasksForTodolist = props.tasks.filter(t => t.isDone === false);
-    }
-    if (props.filter === "completed") {
-        tasksForTodolist = props.tasks.filter(t => t.isDone === true);
-    }
+    const removeTodolist = () => props.removeTodolist(props.id)
+
+    const onAllClickHandler = () => props.changeFilter("all", props.id);
+    const onActiveClickHandler = () => props.changeFilter("active", props.id);
+    const onCompletedClickHandler = () => props.changeFilter("completed", props.id);
 
     return <div>
-        <h3>
-            {props.title}
-            <button onClick={removeTodolistHandler}>X</button>
-
+        <h3> {props.title}
+            <button onClick={removeTodolist}>x</button>
         </h3>
         <div>
             <input value={title}
@@ -83,16 +187,15 @@ export function Todolist(props: PropsType) {
         </div>
         <ul>
             {
-                tasksForTodolist.map(t => {
-                    const onClickHandler = () => props.removeTask(props.todolistId, t.id)
+                props.tasks.map(t => {
+                    const onClickHandler = () => props.removeTask(t.taskId, props.id)
                     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-                        props.changeTaskStatus(props.todolistId, t.id, e.currentTarget.checked);
+                        let newIsDoneValue = e.currentTarget.checked;
+                        props.changeTaskStatus(t.taskId, newIsDoneValue, props.id);
                     }
 
-                    return <li key={t.id} className={t.isDone ? "is-done" : ""}>
-                        <input type="checkbox"
-                               onChange={onChangeHandler}
-                               checked={t.isDone}/>
+                    return <li key={t.taskId} className={t.isDone ? "is-done" : ""}>
+                        <input type="checkbox" onChange={onChangeHandler} checked={t.isDone}/>
                         <span>{t.title}</span>
                         <button onClick={onClickHandler}>x</button>
                     </li>
@@ -112,3 +215,5 @@ export function Todolist(props: PropsType) {
         </div>
     </div>
 }
+
+
